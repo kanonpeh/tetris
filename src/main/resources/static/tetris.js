@@ -22,19 +22,20 @@ document.addEventListener('DOMContentLoaded', function() {
     canvas.parentNode.insertBefore(scoreDiv, canvas);
 
     function arenaSweep() {
-        let rowCount = 1;
-        outer: for (let y = arena.length - 1; y >= 0; --y) {
-            for (let x = 0; x < arena[y].length; ++x) {
-                if (arena[y][x] === 0) {
-                    continue outer;
-                }
+        let lines = 0;
+        for (let y = arena.length - 1; y >= 0; --y) {
+            if (arena[y].every(cell => cell !== 0)) {
+                const row = arena.splice(y, 1)[0].fill(0);
+                arena.unshift(row);
+                ++lines;
+                ++y;
             }
-            const row = arena.splice(y, 1)[0].fill(0);
-            arena.unshift(row);
-            ++y;
-            player.score += rowCount * 10;
-            rowCount *= 2;
         }
+        // テトリス基本スコア方式
+        if (lines === 1) player.score += 40;
+        else if (lines === 2) player.score += 100;
+        else if (lines === 3) player.score += 300;
+        else if (lines === 4) player.score += 1200;
     }
 
     function collide(arena, player) {
@@ -136,8 +137,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function playerDrop() {
         player.pos.y++;
-        player.score += 1; // 落下ごとに1点加算
-        updateScore();
         if (collide(arena, player)) {
             player.pos.y--;
             merge(arena, player);
