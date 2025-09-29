@@ -154,17 +154,29 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    let isGameOver = false;
+
     function playerReset() {
         const pieces = 'TJLOSZI';
         player.matrix = createPiece(pieces[Math.floor(Math.random() * pieces.length)]);
         player.pos.y = 0;
         player.pos.x = (arena[0].length / 2 | 0) - (player.matrix[0].length / 2 | 0);
-        // 画面内に必ず表示されるように
         if (player.pos.y < 0) player.pos.y = 0;
         if (collide(arena, player)) {
             arena.forEach(row => row.fill(0));
             player.score = 0;
+            isGameOver = true;
+            showGameOver();
         }
+    }
+
+    function showGameOver() {
+        const overDiv = document.createElement('div');
+        overDiv.textContent = 'ゲームオーバー';
+        overDiv.style.fontSize = '2em';
+        overDiv.style.color = 'red';
+        overDiv.style.margin = '20px';
+        scoreDiv.parentNode.insertBefore(overDiv, scoreDiv.nextSibling);
     }
 
     function updateScore() {
@@ -211,6 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let lastTime = 0;
 
     function update(time = 0) {
+        if (isGameOver) return;
         const deltaTime = time - lastTime;
         lastTime = time;
         dropCounter += deltaTime;
