@@ -177,6 +177,25 @@ document.addEventListener('DOMContentLoaded', function() {
         overDiv.style.color = 'red';
         overDiv.style.margin = '20px';
         scoreDiv.parentNode.insertBefore(overDiv, scoreDiv.nextSibling);
+
+        // コンテニューボタン追加
+        const contBtn = document.createElement('button');
+        contBtn.textContent = 'コンテニュー';
+        contBtn.style.fontSize = '1.2em';
+        contBtn.style.margin = '10px';
+        scoreDiv.parentNode.insertBefore(contBtn, overDiv.nextSibling);
+        contBtn.addEventListener('click', function() {
+            // 盤面・スコア・状態リセット
+            arena.forEach(row => row.fill(0));
+            player.score = 0;
+            updateScore();
+            isGameOver = false;
+            // ゲームオーバー表示・ボタン削除
+            overDiv.remove();
+            contBtn.remove();
+            playerReset();
+            update();
+        });
     }
 
     function updateScore() {
