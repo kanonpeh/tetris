@@ -16,10 +16,21 @@ document.addEventListener('DOMContentLoaded', function() {
         '#3877FF'  // Z
     ];
 
-    // スコア表示をcanvasの上に
+    // スタートボタンとスコア表示をtetris-controls内に生成
+    const controlsDiv = document.getElementById('tetris-controls');
+    const startBtn = document.createElement('button');
+    startBtn.textContent = 'スタート';
+    startBtn.style.fontSize = '1.5em';
+    startBtn.style.margin = '20px';
+    controlsDiv.appendChild(startBtn);
+
     const scoreDiv = document.createElement('div');
     scoreDiv.innerHTML = 'Score: <span id="score">0</span>';
-    canvas.parentNode.insertBefore(scoreDiv, canvas);
+    controlsDiv.appendChild(scoreDiv);
+
+    // 最初はcanvasとスコア非表示
+    canvas.style.display = 'none';
+    scoreDiv.style.display = 'none';
 
     function arenaSweep() {
         let lines = 0;
@@ -155,6 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     let isGameOver = false;
+    let isStarted = false;
 
     function playerReset() {
         const pieces = 'TJLOSZI';
@@ -169,6 +181,24 @@ document.addEventListener('DOMContentLoaded', function() {
             showGameOver();
         }
     }
+
+    function startGame() {
+        // ゲーム初期化
+        arena.forEach(row => row.fill(0));
+        player.score = 0;
+        updateScore();
+        isGameOver = false;
+        isStarted = true;
+        // 表示切り替え
+        canvas.style.display = '';
+        scoreDiv.style.display = '';
+        startBtn.style.display = 'none';
+        // ゲーム開始
+        playerReset();
+        update();
+    }
+
+    startBtn.addEventListener('click', startGame);
 
     function showGameOver() {
         const overDiv = document.createElement('div');
@@ -241,8 +271,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let dropInterval = 1000;
     let lastTime = 0;
 
+    // update関数修正: スタート前は何もしない
     function update(time = 0) {
-        if (isGameOver) return;
+        if (!isStarted || isGameOver) return;
         const deltaTime = time - lastTime;
         lastTime = time;
         dropCounter += deltaTime;
